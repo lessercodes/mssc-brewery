@@ -8,4 +8,6 @@ public interface CustomerService {
 
     CustomerDto getCustomerById(UUID customerId);
 
+    CustomerDto createCustomer(CustomerDto customerDto);
+
 }
