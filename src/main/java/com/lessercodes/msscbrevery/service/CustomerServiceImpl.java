@@ -25,4 +25,9 @@ public class CustomerServiceImpl implements CustomerService {
                 .build();
     }
 
+    @Override
+    public void updateCustomer(UUID customerId, CustomerDto customerDto) {
+        // TODO: Update customer data
+    }
+
 }
