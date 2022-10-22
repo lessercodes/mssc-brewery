@@ -63,11 +63,15 @@ class BeerControllerTest {
     @Test
     @SneakyThrows
     public void saveBeer() {
-        val savedBeerDto = BeerDto.builder().id(UUID.randomUUID()).beerName("New Beer").build();
-        Mockito.when(beerService.createNewBeer(Mockito.any())).thenReturn(savedBeerDto);
-
-        val beerDto = BeerDto.builder().build();
+        val beerDto = BeerDto.builder()
+                .beerName("New Beer")
+                .beerStyle("IPA")
+                .upc(1L)
+                .build();
         val beerDtoJson = objectMapper.writeValueAsString(beerDto);
+
+        val savedBeerDto = BeerDto.builder().beerName("New Beer").build();
+        Mockito.when(beerService.createNewBeer(Mockito.any())).thenReturn(savedBeerDto);
 
         val saveBeerRequest = MockMvcRequestBuilders.post(API_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -79,9 +83,14 @@ class BeerControllerTest {
     @Test
     @SneakyThrows
     public void updateBeer() {
-        val beerDtoJson = objectMapper.writeValueAsString(validBeer);
+        val beerDto = BeerDto.builder()
+                .beerName("Updated beer")
+                .beerStyle("IPA")
+                .upc(1L)
+                .build();
+        val beerDtoJson = objectMapper.writeValueAsString(beerDto);
 
-        val updateBeerRequest = MockMvcRequestBuilders.put(API_URL + validBeer.getId())
+        val updateBeerRequest = MockMvcRequestBuilders.put(API_URL + UUID.randomUUID())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(beerDtoJson);
         mockMvc.perform(updateBeerRequest)
