@@ -1,10 +1,13 @@
 package com.lessercodes.msscbrevery.web.controller;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +23,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
 
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1/customer")
 @RequiredArgsConstructor
@@ -34,7 +40,7 @@ public class CustomerController {
 
     @PostMapping
     @SneakyThrows
-    public ResponseEntity<Void> createCustomer(@RequestBody CustomerDto customerDto) {
+    public ResponseEntity<Void> createCustomer(@Valid @RequestBody CustomerDto customerDto) {
         val savedCustomerDto = customerService.createCustomer(customerDto);
         val location = String.format("/api/v1/customer/%s", savedCustomerDto.getId());
         val locationUri = new URI(location);
@@ -44,7 +50,7 @@ public class CustomerController {
     @PutMapping("/{customerId}")
     public ResponseEntity<Void> updateCustomer(
             @PathVariable UUID customerId,
-            @RequestBody CustomerDto customerDto) {
+            @Valid @RequestBody CustomerDto customerDto) {
         customerService.updateCustomer(customerId, customerDto);
         return ResponseEntity.noContent().build();
     }
@@ -53,6 +59,14 @@ public class CustomerController {
     public ResponseEntity<Void> deleteCustomer(@PathVariable UUID customerId) {
         customerService.deleteCustomer(customerId);
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<List<String>> validationErrorHandler(ConstraintViolationException e) {
+        val errors = e.getConstraintViolations().stream()
+                .map(violation -> String.format("%s: %s", violation.getPropertyPath(), violation.getMessage()))
+                .collect(Collectors.toList());
+        return ResponseEntity.badRequest().body(errors);
     }
 
 }
