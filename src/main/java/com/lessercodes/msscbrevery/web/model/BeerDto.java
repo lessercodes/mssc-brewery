@@ -1,5 +1,6 @@
 package com.lessercodes.msscbrevery.web.model;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -25,5 +26,7 @@ public class BeerDto {
     private String beerStyle;
     @Positive
     private Long upc;
+    private OffsetDateTime createdDate;
+    private OffsetDateTime lastUpdatedDate;
 
 }
